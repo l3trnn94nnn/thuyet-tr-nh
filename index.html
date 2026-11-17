@@ -1,0 +1,607 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genshin Impact | Hành Trình Teyvat</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Cinzel:wght@500;600;700&display=swap');
+
+:root {
+  --gold: #f4d58d;
+  --cream: #fff8e9;
+  --blue: #a9d8e8;
+  --dark: #101a2b;
+  --glass: rgba(12, 24, 43, .76);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  color: var(--cream);
+  background: #101a2b;
+  overflow: hidden;
+}
+button { font: inherit; cursor: pointer; }
+#stars {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, #fff9 50%, transparent 100%),
+    radial-gradient(1px 1px at 70% 20%, #fff8 50%, transparent 100%),
+    radial-gradient(2px 2px at 85% 75%, #fff8 50%, transparent 100%),
+    radial-gradient(1px 1px at 35% 85%, #fff8 50%, transparent 100%);
+  background-size: 230px 230px, 310px 310px, 270px 270px, 190px 190px;
+  animation: twinkle 5s ease-in-out infinite alternate;
+}
+@keyframes twinkle { from { opacity: .35 } to { opacity: .9 } }
+
+.topbar {
+  position: fixed; z-index: 20; top: 0; left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 5vw;
+  background: linear-gradient(180deg, #091322d9, transparent);
+}
+.brand {
+  font-family: Cinzel, serif; letter-spacing: 3px;
+  color: var(--gold); font-size: 15px; font-weight: 700;
+}
+.counter { color: #ffffffa8; font-size: 13px; }
+.counter span { color: var(--gold); font-weight: 700; }
+.progress {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 30;
+  background: var(--gold); width: 0; transition: width .45s;
+  box-shadow: 0 0 14px var(--gold);
+}
+.deck { position: relative; z-index: 1; height: 100vh; }
+.slide {
+  position: absolute; inset: 0; padding: 100px 8vw 95px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden; transform: translateX(35px) scale(.985);
+  transition: opacity .55s, transform .55s, visibility .55s;
+  overflow-y: auto;
+}
+.slide.active {
+  opacity: 1; visibility: visible; transform: translateX(0) scale(1);
+}
+.slide::before {
+  content: ""; position: absolute; inset: 0; z-index: -2;
+  background: linear-gradient(90deg, #0b1728ee 0%, #0b1728b8 55%, #0b172844 100%);
+}
+.slide::after {
+  content: ""; position: absolute; inset: 0; z-index: -3;
+  background-image: var(--bg);
+  background-position: center; background-size: cover;
+  filter: saturate(.85);
+  transform: scale(1.025);
+}
+.content { width: min(1100px, 100%); animation: rise .7s both; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(20px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+.eyebrow {
+  color: var(--gold); text-transform: uppercase; letter-spacing: 4px;
+  font-size: 12px; font-weight: 700; margin-bottom: 16px;
+}
+h1, h2, h3 { font-family: Cinzel, serif; }
+h1 { font-size: clamp(42px, 7vw, 86px); line-height: 1.12; }
+h2 { font-size: clamp(30px, 4.5vw, 52px); margin-bottom: 18px; }
+h3 { font-size: 20px; color: var(--gold); margin-bottom: 10px; }
+p { color: #e4eaf0; line-height: 1.85; font-size: 16px; }
+.gold { color: var(--gold); }
+.lead { max-width: 650px; font-size: 18px; margin: 20px 0 28px; }
+.rule {
+  width: 90px; height: 2px; background: var(--gold);
+  margin: 22px 0;
+}
+.btn {
+  border: 1px solid var(--gold); color: #182236;
+  background: linear-gradient(120deg, #f8e5b4, #d5ad65);
+  padding: 14px 25px; border-radius: 4px;
+  font-weight: 800; letter-spacing: 1px;
+  transition: .25s; box-shadow: 0 5px 24px #e5bd6b25;
+}
+.btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px #e5bd6b66; }
+.btn.secondary {
+  color: var(--cream); background: #ffffff12;
+  border-color: #ffffff70;
+}
+.hero-title { text-shadow: 0 5px 35px #000; }
+.hero-sub {
+  color: var(--gold); letter-spacing: 6px;
+  font-size: 13px; margin-top: 18px;
+}
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
+
+.panel {
+  background: var(--glass); border: 1px solid #ffffff25;
+  backdrop-filter: blur(12px); border-radius: 14px;
+  padding: 24px; box-shadow: 0 15px 45px #0003;
+}
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.art {
+  width: 100%; height: 300px; object-fit: cover;
+  border-radius: 12px; border: 1px solid #f4d58d66;
+  box-shadow: 0 15px 45px #0007;
+}
+.small { font-size: 13px; color: #bdc9d8; }
+.card {
+  background: #101f34d9; border: 1px solid #ffffff22;
+  border-radius: 12px; padding: 20px; transition: .3s;
+}
+.card:hover {
+  transform: translateY(-7px); border-color: var(--gold);
+  background: #24344b;
+}
+.card .emoji { font-size: 34px; margin-bottom: 12px; display: block; }
+.element {
+  text-align: center; cursor: pointer; min-height: 140px;
+}
+.element.active-element {
+  border-color: var(--gold); background: #8e70443b;
+  box-shadow: 0 0 25px #f4d58d25;
+}
+.element-info {
+  margin-top: 18px; min-height: 90px;
+}
+.region {
+  min-height: 185px; display: flex; flex-direction: column;
+  justify-content: flex-end; background-size: cover; background-position: center;
+  overflow: hidden; position: relative;
+}
+.region::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(0deg, #071323ee, #07132315);
+}
+.region > * { position: relative; }
+.region h3 { color: white; }
+.region p { font-size: 13px; }
+.tag {
+  display: inline-block; padding: 6px 11px; border-radius: 30px;
+  background: #f4d58d20; color: var(--gold); font-size: 12px;
+  margin: 4px 4px 4px 0; border: 1px solid #f4d58d55;
+}
+.list { display: grid; gap: 13px; }
+.list-item { display: flex; gap: 14px; align-items: flex-start; }
+.list-icon {
+  min-width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; background: #f4d58d20;
+  border: 1px solid #f4d58d66; font-size: 18px;
+}
+.character {
+  overflow: hidden; padding: 0;
+}
+.character img {
+  width: 100%; height: 190px; object-fit: cover;
+  transition: transform .5s;
+}
+.character:hover img { transform: scale(1.07); }
+.character div { padding: 15px; }
+.quiz-option {
+  display: block; width: 100%; text-align: left; margin: 9px 0;
+  padding: 13px 16px; border-radius: 8px;
+  color: white; background: #ffffff12;
+  border: 1px solid #ffffff35; transition: .2s;
+}
+.quiz-option:hover { border-color: var(--gold); background: #f4d58d20; }
+.quiz-option.correct { border-color: #79d6a3; background: #276d4b66; }
+.quiz-option.wrong { border-color: #f28b8b; background: #7b303066; }
+#quiz-feedback { min-height: 30px; margin-top: 12px; color: var(--gold); }
+.footer-note { color: #aab8c8; font-size: 12px; margin-top: 20px; }
+.controls {
+  position: fixed; z-index: 20; bottom: 25px; left: 50%;
+  transform: translateX(-50%); display: flex; align-items: center; gap: 12px;
+  background: #081425c9; border: 1px solid #ffffff2c;
+  padding: 8px 12px; border-radius: 40px; backdrop-filter: blur(10px);
+}
+.control-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  color: var(--gold); background: #ffffff10;
+  border: 1px solid #ffffff35; font-size: 20px;
+}
+.control-btn:hover { background: #f4d58d30; }
+.dots { display: flex; gap: 6px; }
+.dot {
+  width: 7px; height: 7px; border: 0; border-radius: 10px;
+  background: #ffffff55; transition: .3s;
+}
+.dot.active { width: 22px; background: var(--gold); }
+.hint {
+  position: fixed; z-index: 10; right: 25px; bottom: 35px;
+  color: #ffffff75; font-size: 11px;
+}
+@media(max-width: 760px) {
+  .slide { padding: 85px 6vw 100px; align-items: flex-start; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+  .art { height: 210px; }
+  .lead { font-size: 15px; }
+  .card { padding: 15px; }
+  .hint { display: none; }
+}
+@media(max-width: 480px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .slide { padding-top: 80px; }
+  .brand { font-size: 11px; }
+  .counter { font-size: 11px; }
+  .controls { bottom: 12px; }
+}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="progress" id="progress"></div>
+
+<header class="topbar">
+  <div class="brand">✦ GENSHIN IMPACT</div>
+  <div class="counter">HÀNH TRÌNH <span id="current">01</span> / 12</div>
+</header>
+
+<main class="deck">
+
+<!-- 1. MỞ ĐẦU -->
+<section class="slide active" style="--bg:url('https://www.actugaming.net/wp-content/uploads/2020/12/Genshin-Impact_Key-Art_EN-2048x1152.jpg')">
+  <div class="content">
+    <div class="eyebrow">Một thế giới rộng lớn đang chờ đón</div>
+    <h1 class="hero-title">GENSHIN<br><span class="gold">IMPACT</span></h1>
+    <div class="hero-sub">THE JOURNEY THROUGH TEYVAT</div>
+    <div class="rule"></div>
+    <p class="lead">Bước vào hành trình khám phá Teyvat — vùng đất của bảy nguyên tố, những bí ẩn cổ xưa và vô vàn cuộc phiêu lưu.</p>
+    <div class="hero-actions">
+      <button class="btn" onclick="goTo(1)">BẮT ĐẦU HÀNH TRÌNH →</button>
+      <button class="btn secondary" onclick="goTo(10)">ĐẾN PHẦN TRẮC NGHIỆM</button>
+    </div>
+  </div>
+</section>
+
+<!-- 2. GIỚI THIỆU -->
+<section class="slide" style="--bg:url('https://www.consolefun.fr/fiche/pc/0.77309400%201771311540.jpg')">
+  <div class="content grid-2">
+    <div>
+      <div class="eyebrow">01 / Giới thiệu</div>
+      <h2>Genshin Impact là gì?</h2>
+      <div class="rule"></div>
+      <p><b class="gold">Genshin Impact</b> là trò chơi nhập vai hành động thế giới mở do HoYoverse phát triển.</p>
+      <p style="margin-top:12px">Người chơi vào vai Nhà Lữ Hành, khám phá thế giới Teyvat, gặp gỡ nhiều nhân vật và tìm kiếm người thân thất lạc.</p>
+      <div style="margin-top:18px">
+        <span class="tag">Thế giới mở</span><span class="tag">Phiêu lưu</span>
+        <span class="tag">Nhập vai</span><span class="tag">Hành động</span>
+      </div>
+    </div>
+    <div>
+      <img class="art" src="https://storage.superpixel.com/cover/ecef77610104c75f2d8d189dddd1b8b3.jpg" alt="Nhà Lữ Hành trong thế giới Teyvat">
+      <p class="small" style="margin-top:8px">Khám phá những vùng đất rộng lớn trong Teyvat.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. CỐT TRUYỆN -->
+<section class="slide" style="--bg:url('https://xboxplay.games/uploadStream/11607.jpg')">
+  <div class="content">
+    <div class="eyebrow">02 / Cốt truyện</div>
+    <h2>Khởi đầu một hành trình</h2>
+    <p class="lead">Hai anh em sinh đôi đặt chân đến một thế giới xa lạ. Một biến cố bất ngờ khiến họ bị chia cắt.</p>
+    <div class="grid-3">
+      <div class="card"><span class="emoji">🌌</span><h3>Cuộc gặp gỡ</h3><p>Nhà Lữ Hành tỉnh dậy tại Teyvat và gặp Paimon — người bạn đồng hành bí ẩn.</p></div>
+      <div class="card"><span class="emoji">🧭</span><h3>Cuộc tìm kiếm</h3><p>Trên hành trình, nhân vật chính đi qua nhiều quốc gia để tìm người thân.</p></div>
+      <div class="card"><span class="emoji">✨</span><h3>Bí mật Teyvat</h3><p>Mỗi vùng đất mở ra những câu chuyện, nhân vật và bí mật mới.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. TEYVAT -->
+<section class="slide" style="--bg:url('https://r2.myc.my/47202d35bf0585e05e4e2e6873248e1e599819c13449795f97a052fe35133074')">
+  <div class="content">
+    <div class="eyebrow">03 / Thế giới</div>
+    <h2>Chào mừng đến <span class="gold">Teyvat</span></h2>
+    <p class="lead">Teyvat là thế giới giả tưởng gồm nhiều vùng đất với văn hóa, cảnh quan và câu chuyện riêng.</p>
+    <div class="grid-3">
+      <div class="card region" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=700')"><h3>Mondstadt</h3><p>Thành phố của tự do và gió.</p></div>
+      <div class="card region" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=700')"><h3>Liyue</h3><p>Vùng đất của thương mại và khế ước.</p></div>
+      <div class="card region" style="background-image:url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=700')"><h3>Inazuma</h3><p>Quần đảo của sấm sét và vĩnh hằng.</p></div>
+      <div class="card region" style="background-image:url('https://images.unsplash.com/photo-1448375240586-882707db888b?w=700')"><h3>Sumeru</h3><p>Tri thức và những khu rừng xanh.</p></div>
+      <div class="card region" style="background-image:url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=700')"><h3>Fontaine</h3><p>Vùng đất của nước và công lý.</p></div>
+      <div class="card region" style="background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=700')"><h3>Natlan</h3><p>Vùng đất gắn liền với chiến đấu và lửa.</p></div>
+    </div>
+    <p class="footer-note">Snezhnaya là một quốc gia quan trọng khác trong thế giới Teyvat.</p>
+  </div>
+</section>
+
+<!-- 5. NGUYÊN TỐ -->
+<section class="slide" style="--bg:url('https://a.storyblok.com/f/178900/800x450/007348dc89/0306203d136fd74a24ee019c42c650b61648647027_main.jpg/m/filters%3Aquality%2895%29format%28webp%29')">
+  <div class="content">
+    <div class="eyebrow">04 / Hệ thống nguyên tố</div>
+    <h2>Bảy nguyên tố của Teyvat</h2>
+    <p class="lead">Mỗi nguyên tố có đặc điểm và vai trò riêng. Hãy nhấn vào từng thẻ để khám phá!</p>
+    <div class="grid-4" id="elements">
+      <div class="card element active-element" onclick="showElement(0)"><span class="emoji">🌪️</span><h3>Anemo</h3><p>Phong</p></div>
+      <div class="card element" onclick="showElement(1)"><span class="emoji">🪨</span><h3>Geo</h3><p>Nham</p></div>
+      <div class="card element" onclick="showElement(2)"><span class="emoji">⚡</span><h3>Electro</h3><p>Lôi</p></div>
+      <div class="card element" onclick="showElement(3)"><span class="emoji">🌿</span><h3>Dendro</h3><p>Thảo</p></div>
+      <div class="card element" onclick="showElement(4)"><span class="emoji">💧</span><h3>Hydro</h3><p>Thủy</p></div>
+      <div class="card element" onclick="showElement(5)"><span class="emoji">🔥</span><h3>Pyro</h3><p>Hỏa</p></div>
+      <div class="card element" onclick="showElement(6)"><span class="emoji">❄️</span><h3>Cryo</h3><p>Băng</p></div>
+    </div>
+    <div class="panel element-info" id="element-info">
+      <h3>🌪️ Anemo — Phong</h3>
+      <p>Nguyên tố gió, có thể tương tác với nhiều nguyên tố khác thông qua phản ứng Khuếch Tán.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6. CHIẾN ĐẤU -->
+<section class="slide" style="--bg:url('https://xboxplay.games/uploadStream/11607.jpg')">
+  <div class="content">
+    <div class="eyebrow">05 / Chiến đấu</div>
+    <h2>Kết hợp nguyên tố!</h2>
+    <p class="lead">Một điểm thú vị của Genshin Impact là hệ thống phản ứng nguyên tố. Kết hợp hai nguyên tố phù hợp có thể tạo ra hiệu ứng chiến đấu đặc biệt.</p>
+    <div class="grid-3">
+      <div class="card"><span class="emoji">🔥 + 💧</span><h3>Bốc Hơi</h3><p>Pyro và Hydro có thể tạo ra phản ứng Bốc Hơi, giúp tăng sát thương.</p></div>
+      <div class="card"><span class="emoji">⚡ + ❄️</span><h3>Siêu Dẫn</h3><p>Electro kết hợp Cryo tạo ra Siêu Dẫn, ảnh hưởng đến kháng vật lý của kẻ địch.</p></div>
+      <div class="card"><span class="emoji">🌿 + 💧</span><h3>Nở Rộ</h3><p>Dendro kết hợp Hydro tạo ra Hạt Nhân Thảo, mở ra nhiều cách chiến đấu.</p></div>
+    </div>
+    <p class="footer-note">Đây là một vài ví dụ. Trò chơi còn có nhiều phản ứng nguyên tố khác.</p>
+  </div>
+</section>
+
+<!-- 7. NHÂN VẬT -->
+<section class="slide" style="--bg:url('https://www.actugaming.net/wp-content/uploads/2020/12/Genshin-Impact_Key-Art_EN-2048x1152.jpg')">
+  <div class="content">
+    <div class="eyebrow">06 / Nhân vật</div>
+    <h2>Những người bạn đồng hành</h2>
+    <p class="lead">Mỗi nhân vật có câu chuyện, tính cách, kỹ năng và phong cách chiến đấu khác nhau.</p>
+    <div class="grid-3">
+      <div class="card character">
+        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=700" alt="Phong cảnh fantasy">
+        <div><h3>Nhà Lữ Hành</h3><p>Nhân vật chính của câu chuyện, có thể sử dụng nhiều nguyên tố.</p></div>
+      </div>
+      <div class="card character">
+        <img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=700" alt="Khu rừng">
+        <div><h3>Paimon</h3><p>Người bạn đồng hành nhỏ bé, thường hướng dẫn Nhà Lữ Hành.</p></div>
+      </div>
+      <div class="card character">
+        <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=700" alt="Biển xanh">
+        <div><h3>Các nhân vật khác</h3><p>Rất nhiều nhân vật đến từ các vùng đất khác nhau đang chờ được khám phá.</p></div>
+      </div>
+    </div>
+    <p class="footer-note">Hình ảnh minh họa trong các thẻ là ảnh phong cảnh thay thế, không phải ảnh chân dung nhân vật.</p>
+  </div>
+</section>
+
+<!-- 8. KHÁM PHÁ -->
+<section class="slide" style="--bg:url('https://consolefun.fr/fiche/pc/0.77309400%201771311540.jpg')">
+  <div class="content grid-2">
+    <div>
+      <div class="eyebrow">07 / Khám phá</div>
+      <h2>Thế giới không có giới hạn</h2>
+      <p class="lead">Bạn có thể tự do đi qua núi non, rừng rậm, thành phố và đại dương.</p>
+      <div class="list">
+        <div class="list-item"><div class="list-icon">🧗</div><div><h3>Leo trèo</h3><p>Vượt qua vách núi và địa hình cao.</p></div></div>
+        <div class="list-item"><div class="list-icon">🪂</div><div><h3>Lượn gió</h3><p>Bay lượn từ những nơi cao để ngắm cảnh.</p></div></div>
+        <div class="list-item"><div class="list-icon">🏊</div><div><h3>Bơi lội</h3><p>Khám phá những vùng nước rộng lớn.</p></div></div>
+        <div class="list-item"><div class="list-icon">🗺️</div><div><h3>Dịch chuyển</h3><p>Sử dụng điểm dịch chuyển để đi lại thuận tiện.</p></div></div>
+      </div>
+    </div>
+    <img class="art" src="https://r2.myc.my/47202d35bf0585e05e4e2e6873248e1e599819c13449795f97a052fe35133074" alt="Khung cảnh thế giới Genshin">
+  </div>
+</section>
+
+<!-- 9. NHIỆM VỤ -->
+<section class="slide" style="--bg:url('https://a.storyblok.com/f/178900/800x450/007348dc89/0306203d136fd74a24ee019c42c650b61648647027_main.jpg/m/filters%3Aquality%2895%29format%28webp%29')">
+  <div class="content">
+    <div class="eyebrow">08 / Hoạt động</div>
+    <h2>Luôn có điều để làm</h2>
+    <div class="grid-3">
+      <div class="card"><span class="emoji">📜</span><h3>Nhiệm vụ cốt truyện</h3><p>Theo dõi hành trình chính và khám phá những bí mật của thế giới.</p></div>
+      <div class="card"><span class="emoji">🎁</span><h3>Rương kho báu</h3><p>Tìm kiếm vật phẩm và phần thưởng ẩn trong các khu vực.</p></div>
+      <div class="card"><span class="emoji">🐉</span><h3>Thử thách</h3><p>Đối đầu với kẻ địch và những thử thách trong thế giới mở.</p></div>
+      <div class="card"><span class="emoji">🧩</span><h3>Giải đố</h3><p>Quan sát môi trường và vận dụng khả năng để giải câu đố.</p></div>
+      <div class="card"><span class="emoji">🌱</span><h3>Thu thập</h3><p>Thu thập nguyên liệu để nấu ăn, chế tạo và phát triển nhân vật.</p></div>
+      <div class="card"><span class="emoji">🎉</span><h3>Sự kiện</h3><p>Tham gia các hoạt động đặc biệt được cập nhật theo thời gian.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. ĐỘI HÌNH -->
+<section class="slide" style="--bg:url('https://www.actugaming.net/wp-content/uploads/2020/12/Genshin-Impact_Key-Art_EN-2048x1152.jpg')">
+  <div class="content grid-2">
+    <div>
+      <div class="eyebrow">09 / Chiến thuật</div>
+      <h2>Xây dựng đội hình</h2>
+      <p class="lead">Một đội hình hợp lý có thể giúp hành trình trở nên dễ dàng và thú vị hơn.</p>
+      <div class="list">
+        <div class="list-item"><div class="list-icon">⚔️</div><div><h3>Sát thương chính</h3><p>Nhân vật đảm nhận phần lớn sát thương.</p></div></div>
+        <div class="list-item"><div class="list-icon">✨</div><div><h3>Hỗ trợ</h3><p>Giúp tăng sức mạnh hoặc tạo phản ứng nguyên tố.</p></div></div>
+        <div class="list-item"><div class="list-icon">💚</div><div><h3>Hồi phục</h3><p>Giúp đội hình duy trì khả năng chiến đấu.</p></div></div>
+        <div class="list-item"><div class="list-icon">🛡️</div><div><h3>Phòng thủ</h3><p>Tạo lá chắn hoặc bảo vệ đồng đội.</p></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Gợi ý cho người mới</h3>
+      <p>• Làm quen với kỹ năng của từng nhân vật.</p>
+      <p>• Thử kết hợp các nguyên tố khác nhau.</p>
+      <p>• Nâng cấp nhân vật và vũ khí phù hợp.</p>
+      <p>• Chọn đội hình phù hợp với thử thách.</p>
+      <div class="rule"></div>
+      <p class="small">Không có một đội hình duy nhất phù hợp với mọi tình huống. Hãy thử nghiệm để tìm cách chơi yêu thích!</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11. TRẮC NGHIỆM -->
+<section class="slide" style="--bg:url('https://storage.superpixel.com/cover/ecef77610104c75f2d8d189dddd1b8b3.jpg')">
+  <div class="content">
+    <div class="eyebrow">10 / Kiểm tra kiến thức</div>
+    <h2>Thử thách Nhà Lữ Hành!</h2>
+    <p class="lead">Trả lời 4 câu hỏi để xem bạn đã khám phá được bao nhiêu về Teyvat.</p>
+    <div class="panel" style="max-width:760px">
+      <div class="small" id="quiz-number">CÂU HỎI 1 / 4</div>
+      <h3 id="quiz-question" style="font-size:23px; color:white; margin:16px 0">Genshin Impact thuộc thể loại nào?</h3>
+      <div id="quiz-options"></div>
+      <div id="quiz-feedback"></div>
+      <button class="btn" id="quiz-next" onclick="nextQuestion()" style="margin-top:12px">CÂU TIẾP THEO →</button>
+      <div class="small" id="quiz-score" style="margin-top:15px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. KẾT -->
+<section class="slide" style="--bg:url('https://www.actugaming.net/wp-content/uploads/2020/12/Genshin-Impact_Key-Art_EN-2048x1152.jpg')">
+  <div class="content" style="text-align:center">
+    <div class="eyebrow">The adventure continues</div>
+    <h1>THANK <span class="gold">YOU!</span></h1>
+    <div class="rule" style="margin:25px auto"></div>
+    <h2 style="font-size:clamp(24px,4vw,40px)">Hẹn gặp lại tại Teyvat!</h2>
+    <p class="lead" style="margin:20px auto">Cảm ơn mọi người đã theo dõi bài thuyết trình.</p>
+    <p class="gold" style="letter-spacing:3px">✦ MAY THE WIND GUIDE YOU ✦</p>
+    <button class="btn" onclick="goTo(0)" style="margin-top:30px">↻ XEM LẠI TỪ ĐẦU</button>
+    <p class="footer-note">Nội dung được tổng hợp từ trang chính thức Genshin Impact và Genshin Impact Wiki. Genshin Impact thuộc bản quyền HoYoverse.</p>
+  </div>
+</section>
+</main>
+
+<div class="controls">
+  <button class="control-btn" onclick="changeSlide(-1)" aria-label="Trang trước">‹</button>
+  <div class="dots" id="dots"></div>
+  <button class="control-btn" onclick="changeSlide(1)" aria-label="Trang tiếp">›</button>
+</div>
+<div class="hint">Dùng ← → để chuyển trang</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+let current = 0;
+const dots = document.getElementById('dots');
+
+slides.forEach((_, i) => {
+  const b = document.createElement('button');
+  b.className = 'dot' + (i === 0 ? ' active' : '');
+  b.setAttribute('aria-label', 'Đến trang ' + (i + 1));
+  b.onclick = () => goTo(i);
+  dots.appendChild(b);
+});
+
+function goTo(index) {
+  current = Math.max(0, Math.min(slides.length - 1, index));
+  slides.forEach((s, i) => s.classList.toggle('active', i === current));
+  [...dots.children].forEach((d, i) => d.classList.toggle('active', i === current));
+  document.getElementById('current').textContent = String(current + 1).padStart(2, '0');
+  document.getElementById('progress').style.width = ((current + 1) / slides.length * 100) + '%';
+}
+function changeSlide(direction) { goTo(current + direction); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') changeSlide(1);
+  if (e.key === 'ArrowLeft') changeSlide(-1);
+});
+
+const elementData = [
+  ['🌪️ Anemo — Phong', 'Nguyên tố gió. Có thể tương tác với nhiều nguyên tố khác thông qua phản ứng Khuếch Tán.'],
+  ['🪨 Geo — Nham', 'Nguyên tố đất đá. Có phản ứng Kết Tinh khi kết hợp với một số nguyên tố khác.'],
+  ['⚡ Electro — Lôi', 'Nguyên tố sấm sét. Có thể tạo ra các phản ứng như Quá Tải, Điện Cảm và Siêu Dẫn.'],
+  ['🌿 Dendro — Thảo', 'Nguyên tố thiên nhiên. Có nhiều phản ứng thú vị khi kết hợp với Hydro, Electro và Pyro.'],
+  ['💧 Hydro — Thủy', 'Nguyên tố nước. Có thể kết hợp với Pyro, Cryo, Electro và Dendro để tạo phản ứng.'],
+  ['🔥 Pyro — Hỏa', 'Nguyên tố lửa. Có thể tạo phản ứng Bốc Hơi, Tan Chảy và Quá Tải.'],
+  ['❄️ Cryo — Băng', 'Nguyên tố băng. Có thể kết hợp với Hydro, Pyro và Electro để tạo các phản ứng khác nhau.']
+];
+function showElement(index) {
+  document.querySelectorAll('.element').forEach((el, i) => el.classList.toggle('active-element', i === index));
+  document.getElementById('element-info').innerHTML =
+    '<h3>' + elementData[index][0] + '</h3><p>' + elementData[index][1] + '</p>';
+}
+
+const questions = [
+  {
+    q: 'Genshin Impact thuộc thể loại nào?',
+    a: ['Trò chơi đua xe', 'Nhập vai hành động thế giới mở', 'Trò chơi giải đố đơn giản', 'Trò chơi thể thao'],
+    correct: 1,
+    explain: 'Chính xác! Genshin Impact là trò chơi nhập vai hành động thế giới mở.'
+  },
+  {
+    q: 'Thế giới trong Genshin Impact có tên là gì?',
+    a: ['Teyvat', 'Azeroth', 'Hyrule', 'Minecraft'],
+    correct: 0,
+    explain: 'Đúng rồi! Thế giới của trò chơi có tên là Teyvat.'
+  },
+  {
+    q: 'Có bao nhiêu nguyên tố cơ bản trong hệ thống nguyên tố?',
+    a: ['4', '5', '6', '7'],
+    correct: 3,
+    explain: 'Chính xác! Có bảy nguyên tố: Phong, Nham, Lôi, Thảo, Thủy, Hỏa và Băng.'
+  },
+  {
+    q: 'Ai là người bạn đồng hành của Nhà Lữ Hành?',
+    a: ['Paimon', 'Dvalin', 'Osial', 'Azhdaha'],
+    correct: 0,
+    explain: 'Đúng rồi! Paimon đồng hành cùng Nhà Lữ Hành trong chuyến phiêu lưu.'
+  }
+];
+let questionIndex = 0;
+let score = 0;
+let answered = false;
+
+function renderQuestion() {
+  const q = questions[questionIndex];
+  document.getElementById('quiz-number').textContent = `CÂU HỎI ${questionIndex + 1} / ${questions.length}`;
+  document.getElementById('quiz-question').textContent = q.q;
+  document.getElementById('quiz-feedback').textContent = '';
+  document.getElementById('quiz-score').textContent = `Điểm hiện tại: ${score} / ${questions.length}`;
+  document.getElementById('quiz-next').textContent = questionIndex === questions.length - 1 ? 'XEM KẾT QUẢ' : 'CÂU TIẾP THEO →';
+  answered = false;
+  const options = document.getElementById('quiz-options');
+  options.innerHTML = '';
+  q.a.forEach((answer, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.textContent = String.fromCharCode(65 + i) + '. ' + answer;
+    btn.onclick = () => chooseAnswer(i, btn);
+    options.appendChild(btn);
+  });
+}
+function chooseAnswer(index, button) {
+  if (answered) return;
+  answered = true;
+  const q = questions[questionIndex];
+  const all = [...document.querySelectorAll('.quiz-option')];
+  all.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.correct) b.classList.add('correct');
+  });
+  if (index === q.correct) {
+    score++;
+    document.getElementById('quiz-feedback').textContent = '✓ ' + q.explain;
+  } else {
+    button.classList.add('wrong');
+    document.getElementById('quiz-feedback').textContent = 'Chưa chính xác. ' + q.explain;
+  }
+  document.getElementById('quiz-score').textContent = `Điểm hiện tại: ${score} / ${questions.length}`;
+}
+function nextQuestion() {
+  if (!answered) {
+    document.getElementById('quiz-feedback').textContent = 'Hãy chọn một đáp án trước nhé!';
+    return;
+  }
+  if (questionIndex < questions.length - 1) {
+    questionIndex++;
+    renderQuestion();
+  } else {
+    document.getElementById('quiz-question').textContent =
+      `Bạn đạt ${score} / ${questions.length} điểm!`;
+    document.getElementById('quiz-options').innerHTML =
+      '<p>' + (score === 4 ? 'Tuyệt vời! Bạn đã trở thành Nhà Lữ Hành thực thụ!' :
+      'Cảm ơn bạn đã tham gia! Hãy xem lại bài thuyết trình để khám phá thêm nhé.') + '</p>';
+    document.getElementById('quiz-feedback').textContent = '✦ Hành trình khám phá Teyvat vẫn tiếp tục!';
+    document.getElementById('quiz-next').textContent = 'CHƠI LẠI';
+    document.getElementById('quiz-next').onclick = () => {
+      questionIndex = 0; score = 0;
+      document.getElementById('quiz-next').onclick = nextQuestion;
+      renderQuestion();
+    };
+  }
+}
+renderQuestion();
+goTo(0);
+</script>
+</body>
+</html>
